@@ -7,7 +7,7 @@ import os
 import json
 
 app=Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD']=True
+#app.config['TEMPLATES_AUTO_RELOAD']=True
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://root@localhost/shiyanlou'
 db=SQLAlchemy(app)
 
@@ -39,38 +39,34 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category %r>' % self.name
 
-
-def readDir(path):
-    pages=os.listdir(path)
-    pagelist=[]
-    for page in pages:
-        with open(path+page,'r') as file:
-            temp=json.loads (file.read())
-            pagelist.append(temp)
-    return pagelist
+path="/home/shiyanlou/files/"
+pages=os.listdir(path)
+pagelist=[]
+for page in pages:
+   with open(path+page,'r') as file:
+        temp=json.loads (file.read())
+        pagelist.append(temp)
 #print(pagelist)
 
-def readFile(file_id):
+def readContent(filename):
     with open(path+filename+".json") as file:
     	temp=json.loads (file.read())
-    	return temp
+    	return temp['content']
 
-def fileisexist(file_id):
+def fileisexist(filename):
     temp=os.path.exists(path+filename+".json")
     return temp
         
-path="/home/shiyanlou/files/"
 
 @app.route('/')
 def index():
-    pagelist=readDir(path)
     return render_template('index.html',titles=pagelist)
 
-@app.route('/files/<file_id>')
-def file(file_id):
-	if fileisexist(file_id):
-	    temp= readFile(file_id)
-	    return render_template('file.html',file=temp)
+@app.route('/files/<filename>')
+def file(filename):
+	if fileisexist(filename):
+	    temp= readContent(filename)
+	    return render_template('file.html',content=temp)
 	else:
 		abort(404)
 

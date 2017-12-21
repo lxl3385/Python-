@@ -1,3 +1,4 @@
-{% for tag in titles  %}
-    <p>{{tag.title}}</p>
+ <h1>hello, this is title list:</h1>
+ {% for tag in titles  %}
+    <a href={{url_for('file',filename=tag.id)}}>{{tag.title}}</a><br>
 {% endfor %}

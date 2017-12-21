@@ -14,23 +14,25 @@ class File(db.Model):
     id=db.Column(db.Integer,primary_key=True)
     title=db.Column(db.String(80),unique=True)
     created_time=db.Column(db.DateTime,unique=False)
-    category_id=db.Column(db.Integer,unique=True,db.ForeignKey('category.id'))
+    category_id=db.Column(db.Integer,db.ForeignKey('category.id'))
     content=db.Column(db.Text,unique=False)
 
-    def __init__(self,title,content):
-        self.title=title
-        self.content=content
+    def __init__(self,title,created_time,category_id,content):
+        self.title  =title
+        self.created_time = created_time
+        self.category_id = category_id
+        self.content = content
 
     def __repr__(self):
         return '<File %r>' % self.title
 
 
 class Category(db.Model):
-    id=db.Column(db.Integer,primary_key=True)
-    name=db.Column(db.String(80),unique=True)
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True)
 
     def __init__(self,name):
-        self.name=name
+        self.name = name
 
     def __repr__(self):
         return '<Category %r>' % self.name

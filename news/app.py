@@ -2,6 +2,7 @@
 from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,abort
+from datetime import datetime
 import os
 import json
 
@@ -15,11 +16,13 @@ class File(db.Model):
     title=db.Column(db.String(80))
     created_time=db.Column(db.DateTime)
     category_id=db.Column(db.Integer, db.ForeignKey('category.id'))
+    category=db.relationship('Category',backref=db.backref('posts',lazy='dynamic'))
     content=db.Column(db.Text)
 
-    def __init__(self,title,created_time,content):
+    def __init__(self,title,created_time,category,content):
         self.title  =title
         self.created_time = created_time
+        self.category=category 
         self.content = content
 
     def __repr__(self):

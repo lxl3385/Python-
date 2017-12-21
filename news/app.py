@@ -3,6 +3,7 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,abort
 from datetime import datetime
+from sqlalchemy import create_engine
 import os
 import json
 
@@ -10,7 +11,8 @@ app=Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD']=True
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://root@localhost/shiyanlou'
 db=SQLAlchemy(app)
-
+engine=create_engine('mysql://root@localhost/shiyanlou')
+#-----------------------------
 class File(db.Model):
     id=db.Column(db.Integer, primary_key=True)
     title=db.Column(db.String(80))
@@ -28,7 +30,6 @@ class File(db.Model):
     def __repr__(self):
         return '<File %r>' % self.title
 
-
 class Category(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True)
@@ -39,7 +40,7 @@ class Category(db.Model):
     def __repr__(self):
         return '<Category %r>' % self.name
 
-
+#--------------------------------
 def readDir(path):
     pages=os.listdir(path)
     pagelist=[]
@@ -50,16 +51,18 @@ def readDir(path):
     return pagelist
 #print(pagelist)
 
-def readFile(file_id):
+def readFile(filename):    
     with open(path+filename+".json") as file:
     	temp=json.loads (file.read())
     	return temp
 
-def fileisexist(file_id):
+def fileisexist(filename):
     temp=os.path.exists(path+filename+".json")
     return temp
         
 path="/home/shiyanlou/files/"
+#----------------
+    
 
 @app.route('/')
 def index():

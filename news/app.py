@@ -6,21 +6,20 @@ import os
 import json
 
 app=Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD']=True
-app.config['SQLALCHEMY_DATABASE_URI']='mysql://root@localhost/Blog'
+#app.config['TEMPLATES_AUTO_RELOAD']=True
+app.config['SQLALCHEMY_DATABASE_URI']='mysql://root@localhost/shiyanlou'
 db=SQLAlchemy(app)
 
 class File(db.Model):
-    id=db.Column(db.Integer,primary_key=True)
-    title=db.Column(db.String(80),unique=True)
-    created_time=db.Column(db.DateTime,unique=False)
-    category_id=db.Column(db.Integer,db.ForeignKey('category.id'))
-    content=db.Column(db.Text,unique=False)
+    id=db.Column(db.Integer, primary_key=True)
+    title=db.Column(db.String(80))
+    created_time=db.Column(db.DateTime)
+    category_id=db.Column(db.Integer, db.ForeignKey('category.id'))
+    content=db.Column(db.Text)
 
-    def __init__(self,title,created_time,category_id,content):
+    def __init__(self,title,created_time,content):
         self.title  =title
         self.created_time = created_time
-        self.category_id = category_id
         self.content = content
 
     def __repr__(self):

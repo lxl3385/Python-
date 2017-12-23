@@ -15,8 +15,6 @@ db=SQLAlchemy(app)
 engine=create_engine('mysql://root@localhost/shiyanlou') 
 client=MongoClient('127.0.0.1',27017)
 dbm=client.shiyanlou
-
-
 #-----------------------------
 class File(db.Model):
     id=db.Column(db.Integer, primary_key=True)
@@ -36,9 +34,8 @@ class File(db.Model):
         return '<File %r>' % self.title
         
     def add_tag(self,tag_name):
-        strtitle=self.title
-        temp=strtitle.split()
-        tag={'titil':temp[1],'tag_name':tag_name}
+        tag_id=len(self.title) 
+        tag={'tag_id':tag_id,'tag_name':tag_name}
         dbm.taglist.insert_one(tag)
 
     def remove_tag(self,tag_name):
@@ -46,9 +43,9 @@ class File(db.Model):
 
     @property
     def tags(self):
-        title=self.title
+        tag_id=len(self.title) 
         tags=[]
-        for tag in dbm.taglist.find({'title':title}):
+        for tag in dbm.taglist.find({'tag_id':tag_id}):
             tags.append(tag['tag_name'])
         return tags
 
@@ -65,14 +62,14 @@ class Category(db.Model):
 
 #--------------
 
-def GetTag(titname):
+def GetTag(title):
     tags=[]
-    temp=titname.split()
-    for tag in dbm.taglist.find({'tag_name':'tech'}):
+    tag_id=len(title) 
+    for tag in dbm.taglist.find({'tag_id':tag_id}):
         tags.append(tag['tag_name'])
     return tags
 
-print(GetTag('Hello Java'))
+#print(GetTag())
 
 def GetAll(table):
     comm='select * from '+table

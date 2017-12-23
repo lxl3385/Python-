@@ -1,0 +1,27 @@
+sudo pip3 install mysqlclient
+sudo pip3 install Flask_SQLAlchemy
+sudo service mysql start
+sudo service mongod start
+--cd news/
+export FLASK_APP=app.py
+export FLASK_DEBUG=1
+--flask shell
+from app import db
+db.create_all()
+from app import Category
+java=Category('Java')
+python=Category('Python')
+from datetime import datetime
+file1=File('Hello Java',datetime.utcnow(),java,'File Content - Java is cool!')
+file2=File('Hello Python',datetime.utcnow(),python,'File Content - Python is cool!')
+db.session.add(java)
+db.session.add(python)
+db.session.add(file1)
+db.session.add(file2)
+db.session.commit()
+file1.add_tag('tech')
+file1.add_tag('java')
+file1.add_tag('linux')
+file2.add_tag('tech')
+file2.add_tag('python')
+---flask run --port 3000

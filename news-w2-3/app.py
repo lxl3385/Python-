@@ -3,7 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,abort
 from datetime import datetime
-from sqlalchemy import create_engine 
+from sqlalchemy import create_engine
+from pymongo import MongoClient
 import os
 import json
 
@@ -11,7 +12,9 @@ app=Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD']=True
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://root@localhost/shiyanlou'
 db=SQLAlchemy(app)
-engine=create_engine('mysql://root@localhost/shiyanlou')  
+engine=create_engine('mysql://root@localhost/shiyanlou') 
+client=MongoClient('127.0.0.1',27017)
+dbm=client.shiyanlou
 
 
 #-----------------------------
@@ -30,7 +33,24 @@ class File(db.Model):
         self.content = content
 
     def __repr__(self):
-        return '<File %r>' % self.title 
+        return '<File %r>' % self.title
+        
+    def add_tag(self,tag_name):
+        strtitle=self.title
+        temp=strtitle.split()
+        tag={'titil':temp[1],'tag_name':tag_name}
+        dbm.taglist.insert_one(tag)
+
+    def remove_tag(self,tag_name):
+        dbm.taglist.deleteMany({'tag_name':tag_name})
+
+    @property
+    def tags(self):
+        title=self.title
+        tags=[]
+        for tag in dbm.taglist.find({'title':title}):
+            tags.append(tag['tag_name'])
+        return tags
 
 
 class Category(db.Model):
@@ -45,6 +65,15 @@ class Category(db.Model):
 
 #--------------
 
+def GetTag(titname):
+    tags=[]
+    temp=titname.split()
+    for tag in dbm.taglist.find({'tag_name':'tech'}):
+        tags.append(tag['tag_name'])
+    return tags
+
+print(GetTag('Hello Java'))
+
 def GetAll(table):
     comm='select * from '+table
     datas=engine.execute(comm).fetchall()
@@ -53,6 +82,7 @@ def GetAll(table):
         temp={}
         temp['id']=data[0]
         temp['title']=data[1]
+        temp['tag']=GetTag(data[1])
         idlist.append(temp)
     return idlist
 
@@ -70,7 +100,6 @@ def GetInfo(table,id):
     return info[0]
 
 #----------
-GetInfo('file','1')
 
 @app.route('/')
 def index():

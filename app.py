@@ -3,7 +3,8 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask import render_template,abort
 from datetime import datetime
-from sqlalchemy import create_engine 
+from sqlalchemy import create_engine
+from pymongo import MongoClient
 import os
 import json
 
@@ -11,7 +12,9 @@ app=Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD']=True
 app.config['SQLALCHEMY_DATABASE_URI']='mysql://root@localhost/shiyanlou'
 db=SQLAlchemy(app)
-engine=create_engine('mysql://root@localhost/shiyanlou')  
+engine=create_engine('mysql://root@localhost/shiyanlou') 
+client=MongoClient('127.0.0.1',27017)
+dbm=client.shiyanlou
 
 
 #-----------------------------
@@ -30,7 +33,19 @@ class File(db.Model):
         self.content = content
 
     def __repr__(self):
-        return '<File %r>' % self.title 
+        return '<File %r>' % self.title
+        
+    def add_tag(self,tag_name):
+        tag={'titil':self.title,'tag_name':tagname}
+        dbm.taglist.insert_one(tag)
+
+    def remove_tag(self,tag_name):
+        dbm.taglist.deleteMany({'tag_name':tag_name})
+
+    @property
+    def tags(self):
+        for tag in dbm.taglist.find({'title':self.titlle})
+            print(tag)
 
 
 class Category(db.Model):

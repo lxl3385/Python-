@@ -1,0 +1,5 @@
+ <h1>hello, this is title list:</h1>
+ {% for page in titles  %}
+    <a href={{url_for('file',file_id=page.id)}}>{{page.title}}</a>
+    <a>{{page.tag}}</a><br>
+{% endfor %}

@@ -21,28 +21,6 @@ class User(Base):
     role=db.Column(db.SmallInteger,default=ROLE_USER)
     job=db.Column(db.String(64))
     publish_courses = db.relationship('Course') 
-    
-    def __repr__(self):
-        return '<User:{}>'.format(self.username)
-
-    @property
-    def password(self):
-        return self._password
-
-    @password.setter
-    def password(self,orig_password):
-        self._password=generate_password_hash(orig_password)
-
-    def check_password(self,password):
-        return check_password_hash(self._password,password)
-
-    @property
-    def is_admin(self):
-        return self.role==self.ROLE_ADMIN
-
-    @property
-    def is_staff(self):
-        return self.role==self.ROLE_STAFF
 
 class Course(Base):
     __tablename__ = 'course'
